@@ -32,24 +32,25 @@ export function IdleScreen({ stationId, connected }: Props) {
 
       {/* Breathing Logo */}
       <div style={{
-        width: '120px',
-        height: '120px',
-        borderRadius: '24px',
-        background: 'linear-gradient(135deg, var(--primary), var(--primary-container))',
+        width: '180px',
+        height: '180px',
+        borderRadius: '36px',
+        background: 'rgba(244, 123, 32, 0.08)',
+        border: '1.5px solid rgba(244, 123, 32, 0.15)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         animation: 'breathe 2.5s ease-in-out infinite',
-        boxShadow: 'var(--shadow-glow)',
+        boxShadow: '0 8px 32px rgba(244, 123, 32, 0.06)',
         marginBottom: '40px',
       }}>
         <img
           src="/logo.png"
           alt="MMCY"
-          style={{ width: '80px', height: '80px', borderRadius: '16px', objectFit: 'cover' }}
+          style={{ width: '130px', height: '130px', objectFit: 'contain' }}
           onError={(e) => {
             (e.target as HTMLImageElement).style.display = 'none';
-            (e.target as HTMLImageElement).parentElement!.innerHTML = '<span style="color:white;font-size:36px;font-weight:800">M</span>';
+            (e.target as HTMLImageElement).parentElement!.innerHTML = '<span style="color:var(--primary);font-size:48px;font-weight:800">M</span>';
           }}
         />
       </div>

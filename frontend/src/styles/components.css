@@ -1,0 +1,329 @@
+/* MMCY Reception Desk — Component Styles */
+
+/* ─── Gradient Button ─── */
+.btn-gradient {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary), var(--primary-container));
+  color: var(--on-primary);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+.btn-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+}
+.btn-gradient:active {
+  transform: translateY(0);
+}
+.btn-gradient:disabled {
+  background: #ccc;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ─── Outlined Button ─── */
+.btn-outlined {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--secondary);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.btn-outlined:hover {
+  background: var(--secondary-04);
+  border-color: var(--secondary-50);
+}
+
+/* ─── Icon Button ─── */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  color: var(--secondary-70);
+  transition: background var(--transition-fast);
+}
+.btn-icon:hover {
+  background: var(--secondary-08);
+}
+
+/* ─── Soft-touch Input ─── */
+.input-soft {
+  width: 100%;
+  padding: 14px 20px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--surface-container-highest);
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: var(--on-surface);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.input-soft:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.input-soft::placeholder {
+  color: var(--secondary-50);
+}
+
+.input-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--secondary);
+  margin-bottom: 6px;
+}
+
+/* ─── Select / Dropdown ─── */
+.select-soft {
+  width: 100%;
+  padding: 14px 20px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--surface-container-highest);
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: var(--on-surface);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%230D1B3D' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+  transition: border-color var(--transition-fast);
+}
+.select-soft:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* ─── Card ─── */
+.card {
+  background: var(--surface-container);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.card-elevated {
+  background: var(--surface-container-low);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+/* ─── Status Chip ─── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.chip-active {
+  background: rgba(76, 175, 80, 0.08);
+  color: #4CAF50;
+}
+.chip-checked-out {
+  background: var(--secondary-08);
+  color: var(--secondary);
+}
+.chip-scheduled {
+  background: rgba(0, 90, 180, 0.08);
+  color: var(--tertiary);
+}
+.chip-checked-in {
+  background: rgba(76, 175, 80, 0.08);
+  color: #4CAF50;
+}
+.chip-cancelled {
+  background: rgba(244, 123, 32, 0.08);
+  color: var(--primary);
+}
+
+/* ─── Data Table ─── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.data-table th {
+  text-align: left;
+  padding: 14px 16px;
+  font-weight: 700;
+  color: var(--secondary);
+  background: var(--surface-container-highest);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 12px 16px;
+  border: none;
+  vertical-align: middle;
+}
+.data-table tr:nth-child(even) {
+  background: var(--secondary-03);
+}
+.data-table tr {
+  transition: background var(--transition-fast);
+}
+.data-table tr:hover {
+  background: var(--secondary-08);
+}
+
+/* ─── Pagination ─── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+  font-size: 13px;
+  color: var(--secondary-70);
+}
+.pagination-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.pagination-nav button {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--secondary);
+  font-size: 18px;
+  transition: background var(--transition-fast);
+}
+.pagination-nav button:hover:not(:disabled) {
+  background: var(--secondary-08);
+}
+.pagination-nav button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+/* ─── Dialog / Modal ─── */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+.dialog {
+  background: var(--surface-container);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15);
+  animation: dialog-enter 200ms ease-out;
+}
+@keyframes dialog-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.dialog-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--on-surface);
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* ─── Snackbar / Toast ─── */
+.snackbar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  z-index: 2000;
+  animation: snackbar-enter 300ms ease-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.snackbar-success { background: #4CAF50; }
+.snackbar-error { background: #f44336; }
+.snackbar-warning { background: #ff9800; }
+@keyframes snackbar-enter {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ─── Loading Spinner ─── */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Form Group ─── */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row > * {
+  flex: 1;
+}

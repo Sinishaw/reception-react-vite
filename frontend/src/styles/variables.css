@@ -1,0 +1,57 @@
+/* MMCY Reception Desk — Design Tokens
+   Matches Flutter AppColors from core/theme.dart */
+
+:root {
+  /* Primary palette */
+  --primary: #F47B20;
+  --primary-container: #C45100;
+  --primary-hover: #e06c10;
+
+  /* Secondary & Tertiary */
+  --secondary: #0D1B3D;
+  --secondary-70: rgba(13, 27, 61, 0.7);
+  --secondary-50: rgba(13, 27, 61, 0.5);
+  --secondary-08: rgba(13, 27, 61, 0.08);
+  --secondary-04: rgba(13, 27, 61, 0.04);
+  --secondary-03: rgba(13, 27, 61, 0.03);
+  --tertiary: #005AB4;
+
+  /* Surfaces */
+  --background: #FFF8F6;
+  --surface: #FFF8F6;
+  --surface-container-low: #FFF1EB;
+  --surface-container: #FFEAE1;
+  --surface-container-highest: #F5DED4;
+
+  /* Content */
+  --on-surface: #251913;
+  --on-primary: #FFFFFF;
+  --outline-variant: #E0C0B2;
+  --error: #BA1A1A;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 20px;
+
+  /* Shadows */
+  --shadow-card: 0 12px 32px rgba(37, 25, 19, 0.04);
+  --shadow-primary: 0 4px 12px rgba(244, 123, 32, 0.2);
+  --shadow-glow: 0 4px 8px rgba(244, 123, 32, 0.3);
+  --shadow-soft: 0 10px 20px rgba(0, 0, 0, 0.05);
+
+  /* Typography */
+  --font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
+
+  /* Layout */
+  --sidebar-width: 280px;
+  --header-height: 96px;
+}

@@ -16,7 +16,7 @@ const TabletIcon = ({ color }: { color: string }) => (
   </svg>
 );
 
-const PAGE_TITLES = ['Visitors', 'Appointments', 'Dashboard', 'Settings'];
+const PAGE_TITLES = ['Dashboard', 'Visitors', 'Appointments', 'Settings'];
 
 export function ReceptionistShell() {
   const [activeTab, setActiveTab] = useState(0);
@@ -27,11 +27,11 @@ export function ReceptionistShell() {
 
   const renderScreen = () => {
     switch (activeTab) {
-      case 0: return <VisitLogScreen />;
-      case 1: return <AppointmentsScreen />;
-      case 2: return <DashboardScreen />;
+      case 0: return <DashboardScreen />;
+      case 1: return <VisitLogScreen />;
+      case 2: return <AppointmentsScreen />;
       case 3: return <SettingsScreen />;
-      default: return <VisitLogScreen />;
+      default: return <DashboardScreen />;
     }
   };
 

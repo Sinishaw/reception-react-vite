@@ -8,9 +8,9 @@ interface SidebarProps {
 }
 
 const NAV_ITEMS = [
+  { icon: '📊', label: 'Dashboard' },
   { icon: '👥', label: 'Visitors' },
   { icon: '📅', label: 'Appointments' },
-  { icon: '📊', label: 'Dashboard' },
   { icon: '⚙️', label: 'Settings' },
 ];
 

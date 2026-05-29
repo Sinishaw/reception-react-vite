@@ -2,9 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { useAppointments } from '../../hooks/useAppointments';
 import { AppointmentFormDialog } from './AppointmentFormDialog';
 import { CheckInForm } from '../check-in/CheckInForm';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import type { Appointment } from '../../types/models';
 
 export function AppointmentsScreen() {
+  const [stationId] = useLocalStorage<string | null>('stationId', null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(0);
@@ -15,6 +17,47 @@ export function AppointmentsScreen() {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const { appointments, loading, error, refetch, removeAppointment } = useAppointments();
+
+  if (!stationId) {
+    return (
+      <div style={{
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '40px',
+        boxSizing: 'border-box',
+      }}>
+        <div className="card-elevated" style={{
+          maxWidth: '480px',
+          padding: '36px',
+          textAlign: 'center',
+          background: '#FFF8F6',
+          border: '1.5px solid var(--outline-variant, #E0C0B2)',
+          borderRadius: 'var(--radius-lg, 16px)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px',
+        }}>
+          <span style={{ fontSize: '48px' }}>🖥️</span>
+          <h3 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--secondary, #0D1B3D)', margin: 0 }}>
+            Active Pairing Session Required
+          </h3>
+          <p style={{ fontSize: '14px', color: 'var(--secondary-70, #0D1B3D)', lineHeight: 1.5, margin: 0 }}>
+            To view, schedule, and check-in appointments, this receptionist console must be paired with an active tablet kiosk session. Please go to the Settings tab to pair a station.
+          </p>
+          <button
+            className="btn-soft"
+            style={{ width: '100%', padding: '14px', marginTop: '8px', fontWeight: 700 }}
+            onClick={() => window.dispatchEvent(new CustomEvent('switch-tab', { detail: 3 }))}
+          >
+            Go to Settings
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const filtered = useMemo(() => {
     return appointments.filter(a => {

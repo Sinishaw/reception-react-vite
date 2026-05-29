@@ -12,6 +12,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { AuthModal } from './AuthModal';
 import { logActivity } from '../api/activityLogs';
+import { LoginScreen } from '../features/auth/LoginScreen';
 
 const TabletIcon = ({ color }: { color: string }) => (
   <svg width="14" height="20" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transition: 'all 0.3s ease' }}>
@@ -28,35 +29,53 @@ export function ReceptionistShell() {
   const [stationId] = useLocalStorage<string | null>('stationId', null);
   const [floor] = useLocalStorage<string | null>('assignedFloor', null);
   const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   
   const { session } = useSSE(stationId);
-
+ 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        const isLogged = sessionStorage.getItem('auth_logged_in');
-        if (!isLogged) {
-          sessionStorage.setItem('auth_logged_in', 'true');
-          await logActivity(
-            'login',
-            'auth',
-            currentUser.uid,
-            `User ${currentUser.displayName || currentUser.email || 'unknown'} logged in`
-          );
+      try {
+        if (currentUser) {
+          const isLogged = sessionStorage.getItem('auth_logged_in');
+          if (!isLogged) {
+            sessionStorage.setItem('auth_logged_in', 'true');
+            await logActivity(
+              'login',
+              'auth',
+              currentUser.uid,
+              `User ${currentUser.displayName || currentUser.email || 'unknown'} logged in`
+            );
+          }
+          setUser(currentUser);
+        } else {
+          const wasLogged = sessionStorage.getItem('auth_logged_in');
+          if (wasLogged) {
+            sessionStorage.removeItem('auth_logged_in');
+            await logActivity('logout', 'auth', 'unknown', 'Session ended (logged out or token expired)');
+          }
+          setUser(null);
         }
-        setUser(currentUser);
-      } else {
-        const wasLogged = sessionStorage.getItem('auth_logged_in');
-        if (wasLogged) {
-          sessionStorage.removeItem('auth_logged_in');
-          await logActivity('logout', 'auth', 'unknown', 'Session ended (logged out or token expired)');
-        }
-        setUser(null);
+      } catch (err) {
+        console.error('Error in onAuthStateChanged:', err);
+      } finally {
+        setAuthLoading(false);
       }
     });
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const handleSwitchTab = (e: Event) => {
+      const customEvent = e as CustomEvent<number>;
+      if (typeof customEvent.detail === 'number') {
+        setActiveTab(customEvent.detail);
+      }
+    };
+    window.addEventListener('switch-tab', handleSwitchTab);
+    return () => window.removeEventListener('switch-tab', handleSwitchTab);
   }, []);
 
   // Inactivity timeout logic (30 minutes)
@@ -131,6 +150,18 @@ export function ReceptionistShell() {
       default: return <DashboardScreen />;
     }
   };
+
+  if (authLoading) {
+    return (
+      <div style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF1EB' }}>
+        <div className="spinner" style={{ width: 40, height: 40, borderWidth: 3, color: 'var(--primary)' }} />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginScreen />;
+  }
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>

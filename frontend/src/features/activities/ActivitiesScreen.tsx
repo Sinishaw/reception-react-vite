@@ -92,14 +92,17 @@ export function ActivitiesScreen() {
     switch (action) {
       case 'create':
       case 'create_session':
+      case 'login':
         return { bg: 'rgba(76, 175, 80, 0.08)', text: '#4CAF50', border: '1px solid rgba(76, 175, 80, 0.2)' };
       case 'update':
         return { bg: 'rgba(33, 150, 243, 0.08)', text: '#2196F3', border: '1px solid rgba(33, 150, 243, 0.2)' };
       case 'delete':
       case 'terminate_session':
+      case 'session_expiry':
         return { bg: 'rgba(244, 67, 54, 0.08)', text: '#f44336', border: '1px solid rgba(244, 67, 54, 0.2)' };
       case 'checkout':
         return { bg: 'rgba(255, 152, 0, 0.08)', text: '#FF9800', border: '1px solid rgba(255, 152, 0, 0.2)' };
+      case 'logout':
       default:
         return { bg: 'rgba(158, 158, 158, 0.08)', text: '#9E9E9E', border: '1px solid rgba(158, 158, 158, 0.2)' };
     }
@@ -155,6 +158,9 @@ export function ActivitiesScreen() {
             <option value="checkout">Checkouts</option>
             <option value="create_session">Session Starts</option>
             <option value="terminate_session">Session Ends</option>
+            <option value="login">Logins</option>
+            <option value="logout">Logouts</option>
+            <option value="session_expiry">Session Expirations</option>
           </select>
         </div>
 
@@ -169,6 +175,7 @@ export function ActivitiesScreen() {
             <option value="visit">Visits Only</option>
             <option value="appointment">Appointments Only</option>
             <option value="session">Sessions Only</option>
+            <option value="auth">Auth Only</option>
           </select>
         </div>
       </div>

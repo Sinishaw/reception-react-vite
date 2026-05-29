@@ -11,6 +11,7 @@ import { auth } from '../lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { AuthModal } from './AuthModal';
+import { logActivity } from '../api/activityLogs';
 
 const TabletIcon = ({ color }: { color: string }) => (
   <svg width="14" height="20" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transition: 'all 0.3s ease' }}>
@@ -33,14 +34,85 @@ export function ReceptionistShell() {
   const { session } = useSSE(stationId);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        const isLogged = sessionStorage.getItem('auth_logged_in');
+        if (!isLogged) {
+          sessionStorage.setItem('auth_logged_in', 'true');
+          await logActivity(
+            'login',
+            'auth',
+            currentUser.uid,
+            `User ${currentUser.displayName || currentUser.email || 'unknown'} logged in`
+          );
+        }
+        setUser(currentUser);
+      } else {
+        const wasLogged = sessionStorage.getItem('auth_logged_in');
+        if (wasLogged) {
+          sessionStorage.removeItem('auth_logged_in');
+          await logActivity('logout', 'auth', 'unknown', 'Session ended (logged out or token expired)');
+        }
+        setUser(null);
+      }
     });
     return () => unsubscribe();
   }, []);
 
+  // Inactivity timeout logic (30 minutes)
+  useEffect(() => {
+    if (!user) return;
+
+    const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+    let timeoutId: any;
+
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(async () => {
+        try {
+          await logActivity(
+            'session_expiry',
+            'auth',
+            user.uid,
+            `Session expired due to inactivity for user ${user.displayName || user.email || 'unknown'}`
+          );
+          sessionStorage.removeItem('auth_logged_in');
+          await signOut(auth);
+          setShowUserDropdown(false);
+        } catch (err) {
+          console.error('Session expiry signOut failed', err);
+        }
+      }, INACTIVITY_TIMEOUT);
+    };
+
+    // Events that indicate user activity
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    activityEvents.forEach((event) => {
+      window.addEventListener(event, resetTimer);
+    });
+
+    resetTimer();
+
+    return () => {
+      clearTimeout(timeoutId);
+      activityEvents.forEach((event) => {
+        window.removeEventListener(event, resetTimer);
+      });
+    };
+  }, [user]);
+
   const handleSignOut = async () => {
     try {
+      if (user) {
+        await logActivity(
+          'logout',
+          'auth',
+          user.uid,
+          `User ${user.displayName || user.email || 'unknown'} logged out`
+        );
+      }
+      sessionStorage.removeItem('auth_logged_in');
       await signOut(auth);
       setShowUserDropdown(false);
     } catch (err) {

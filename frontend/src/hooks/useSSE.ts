@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { db } from '../lib/firebase';
 import { doc, onSnapshot, updateDoc, setDoc } from 'firebase/firestore';
 import type { ActiveSession } from '../types/models';
@@ -21,12 +21,21 @@ export function useSSE(stationId: string | null, role: 'receptionist' | 'tablet'
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
+  const [unlinked, setUnlinked] = useState(false);
+
+  const unlinkedRef = useRef(false);
+  const wasConnectedRef = useRef(false);
+  const currentSessionIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!stationId) {
       setSession(null);
       setConnected(false);
       setConflict(false);
+      setUnlinked(false);
+      unlinkedRef.current = false;
+      wasConnectedRef.current = false;
+      currentSessionIdRef.current = null;
       return;
     }
 
@@ -42,21 +51,54 @@ export function useSSE(stationId: string | null, role: 'receptionist' | 'tablet'
         if (snapshot.exists()) {
           const data = snapshot.data();
           const currentSession = data?.activeSession as ActiveSession | undefined;
+          const sessionId = currentSession?.sessionId || null;
+
+          // Reset unlinked state if the session changes (new session created)
+          if (sessionId !== currentSessionIdRef.current) {
+            currentSessionIdRef.current = sessionId;
+            setUnlinked(false);
+            unlinkedRef.current = false;
+            wasConnectedRef.current = false;
+          }
           
           if (role === 'tablet') {
             const devId = getTabletDeviceId();
             const existingPairedId = currentSession?.pairedTabletId;
             
+            // If we have been unlinked in this session, do not attempt to auto-re-pair
+            if (unlinkedRef.current) {
+              setConflict(false);
+              setSession(currentSession || null);
+              return;
+            }
+
             if (existingPairedId && existingPairedId !== devId) {
               // Conflict: another tablet is already paired to this session
               setConflict(true);
               setSession(currentSession || null);
               return;
-            } else {
+            } else if (existingPairedId === devId) {
               setConflict(false);
-              // Pair/maintain pairing
-              if (!existingPairedId || !currentSession?.tabletConnected || !data?.isOnline) {
-                // Perform pairing update
+              wasConnectedRef.current = true; // We successfully connected
+              // Maintain tabletConnected = true if needed
+              if (!currentSession?.tabletConnected || !data?.isOnline) {
+                updateDoc(docRef, {
+                  isOnline: true,
+                  'activeSession.tabletConnected': true,
+                }).catch(console.error);
+              }
+            } else {
+              // pairedTabletId is null/empty
+              if (wasConnectedRef.current) {
+                // We were connected, but now pairedTabletId is null -> receptionist unlinked us!
+                setUnlinked(true);
+                unlinkedRef.current = true;
+                setConflict(false);
+                setSession(currentSession || null);
+                return;
+              } else {
+                // Spot is open, pair ourselves!
+                setConflict(false);
                 updateDoc(docRef, {
                   isOnline: true,
                   'activeSession.tabletConnected': true,
@@ -77,6 +119,7 @@ export function useSSE(stationId: string | null, role: 'receptionist' | 'tablet'
         } else {
           // If station doesn't exist and we are tablet, create it
           if (role === 'tablet') {
+            if (unlinkedRef.current) return;
             setConflict(false);
             const devId = getTabletDeviceId();
             setDoc(docRef, {
@@ -122,5 +165,5 @@ export function useSSE(stationId: string | null, role: 'receptionist' | 'tablet'
     };
   }, [stationId, role]);
 
-  return { session, connected, error, conflict };
+  return { session, connected, error, conflict, unlinked };
 }

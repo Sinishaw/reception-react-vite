@@ -8,9 +8,9 @@ interface SidebarProps {
 }
 
 const NAV_ITEMS = [
+  { icon: '📊', label: 'Dashboard' },
   { icon: '👥', label: 'Visitors' },
   { icon: '📅', label: 'Appointments' },
-  { icon: '📊', label: 'Dashboard' },
   { icon: '⚙️', label: 'Settings' },
 ];
 
@@ -29,20 +29,18 @@ export function Sidebar({ activeTab, onTabChange, stationId, floor }: SidebarPro
       <div style={{
         padding: '24px 20px',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        gap: '12px',
+        justifyContent: 'center',
+        gap: '8px',
       }}>
         <img
           src="/logo.png"
           alt="MMCY Logo"
-          style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover' }}
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = 'none';
-          }}
+          style={{ width: '140px', height: '56px', objectFit: 'contain' }}
         />
-        <div>
-          <div style={{ fontWeight: 800, fontSize: 18, color: 'var(--secondary)', letterSpacing: '-0.5px' }}>MMCY</div>
-          <div style={{ fontSize: 11, color: 'var(--secondary-50)', fontWeight: 500 }}>Reception Desk</div>
+        <div style={{ fontSize: '11px', color: 'var(--secondary-50)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.2px' }}>
+          Reception Desk
         </div>
       </div>
 

@@ -91,7 +91,7 @@ export function DashboardScreen() {
   }
 
   return (
-    <div style={{ padding: '32px' }}>
+    <div style={{ padding: '32px', height: '100%', overflowY: 'auto', boxSizing: 'border-box' }}>
       <h2 style={{ fontSize: '28px', fontWeight: 700, letterSpacing: '-0.5px', marginBottom: '32px' }}>Dashboard</h2>
 
       {/* Metric Cards */}

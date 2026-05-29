@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDJuWH5WAEpM85VUGIO8vo66tmoNGY23q8",
@@ -13,6 +14,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
+
 
 export function cleanData(obj: any): any {
   if (obj === null || obj === undefined) return null;

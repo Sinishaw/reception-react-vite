@@ -8,7 +8,7 @@ import { ActivitiesScreen } from '../features/activities/ActivitiesScreen';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useSSE } from '../hooks/useSSE';
 import { auth, db } from '../lib/firebase';
-import { onAuthStateChanged, signOut, getRedirectResult } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { AuthModal } from './AuthModal';
 import { logActivity } from '../api/activityLogs';
@@ -37,17 +37,6 @@ export function ReceptionistShell() {
   const { session } = useSSE(stationId);
  
   useEffect(() => {
-    // Process redirect result first to ensure standard Google sign-in redirect sessions complete successfully
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result?.user) {
-          console.log('[Auth] Google redirect sign-in resolved successfully:', result.user);
-        }
-      })
-      .catch((error) => {
-        console.error('[Auth] Google redirect sign-in error:', error);
-      });
-
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       try {
         if (currentUser) {

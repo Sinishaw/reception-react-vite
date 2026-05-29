@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../../lib/firebase';
 import { 
-  signInWithRedirect, 
+  signInWithPopup, 
   GoogleAuthProvider, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
@@ -21,7 +21,7 @@ export function LoginScreen() {
     setLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(auth, provider);
+      await signInWithPopup(auth, provider);
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Google Sign-In failed.');
@@ -241,7 +241,7 @@ export function LoginScreen() {
               <path fill="#4285F4" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.43-3.43C17.96 1.19 15.24 0 12 0 7.27 0 3.17 2.19 1.18 5.84l3.87 3.01c.98-2.96 3.71-5.1 6.95-5.1z" />
               <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.6-.2-2.37H12v4.51h6.45c-.28 1.49-1.12 2.76-2.38 3.6l3.7 2.87c2.16-1.99 3.42-4.91 3.42-8.61z" />
             </svg>
-            Google Redirect Sign-In
+            Sign in with Google
           </button>
           
           <button

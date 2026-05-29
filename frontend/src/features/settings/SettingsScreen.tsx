@@ -92,7 +92,7 @@ export function SettingsScreen() {
   const qrData = stationId ? `${window.location.origin}/?mode=tablet&stationId=${stationId}&floor=${assignedFloor || ''}&sessionId=${sessionId || ''}` : '';
 
   return (
-    <div style={{ padding: '32px', maxWidth: '800px' }}>
+    <div style={{ padding: '32px', maxWidth: '800px', height: '100%', overflowY: 'auto', boxSizing: 'border-box' }}>
       <h2 style={{ fontSize: '28px', fontWeight: 700, letterSpacing: '-0.5px', marginBottom: '32px' }}>Settings</h2>
 
       <div className="card" style={{ padding: '24px' }}>

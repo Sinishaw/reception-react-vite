@@ -241,7 +241,7 @@ export function ReceptionistShell() {
         </header>
 
         {/* Content Area */}
-        <main style={{ flex: 1, overflow: 'auto', background: 'var(--background)' }}>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--background)' }}>
           {renderScreen()}
         </main>
       </div>

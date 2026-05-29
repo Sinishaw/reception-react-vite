@@ -84,4 +84,5 @@ export interface ActiveSession {
   receptionistUid?: string;
   sessionId?: string;
   assignedFloor?: string;
+  pairedTabletId?: string | null;
 }

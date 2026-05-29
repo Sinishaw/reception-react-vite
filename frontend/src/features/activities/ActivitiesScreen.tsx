@@ -93,12 +93,14 @@ export function ActivitiesScreen() {
       case 'create':
       case 'create_session':
       case 'login':
+      case 'link_tablet':
         return { bg: 'rgba(76, 175, 80, 0.08)', text: '#4CAF50', border: '1px solid rgba(76, 175, 80, 0.2)' };
       case 'update':
         return { bg: 'rgba(33, 150, 243, 0.08)', text: '#2196F3', border: '1px solid rgba(33, 150, 243, 0.2)' };
       case 'delete':
       case 'terminate_session':
       case 'session_expiry':
+      case 'unlink_tablet':
         return { bg: 'rgba(244, 67, 54, 0.08)', text: '#f44336', border: '1px solid rgba(244, 67, 54, 0.2)' };
       case 'checkout':
         return { bg: 'rgba(255, 152, 0, 0.08)', text: '#FF9800', border: '1px solid rgba(255, 152, 0, 0.2)' };
@@ -161,6 +163,8 @@ export function ActivitiesScreen() {
             <option value="login">Logins</option>
             <option value="logout">Logouts</option>
             <option value="session_expiry">Session Expirations</option>
+            <option value="link_tablet">Tablet Pairings</option>
+            <option value="unlink_tablet">Tablet Unpairings</option>
           </select>
         </div>
 

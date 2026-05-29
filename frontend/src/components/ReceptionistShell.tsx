@@ -7,12 +7,13 @@ import { SettingsScreen } from '../features/settings/SettingsScreen';
 import { ActivitiesScreen } from '../features/activities/ActivitiesScreen';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useSSE } from '../hooks/useSSE';
-import { auth } from '../lib/firebase';
+import { auth, db } from '../lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { AuthModal } from './AuthModal';
 import { logActivity } from '../api/activityLogs';
 import { LoginScreen } from '../features/auth/LoginScreen';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const TabletIcon = ({ color }: { color: string }) => (
   <svg width="14" height="20" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transition: 'all 0.3s ease' }}>
@@ -139,6 +140,22 @@ export function ReceptionistShell() {
     }
   };
 
+  const handleUnlinkTablet = async () => {
+    if (!stationId) return;
+    if (!confirm('Are you sure you want to unlink the current tablet kiosk?')) return;
+    try {
+      const docRef = doc(db, 'stations', stationId);
+      await updateDoc(docRef, {
+        'activeSession.tabletConnected': false,
+        'activeSession.pairedTabletId': null,
+        'activeSession.screen': 'idle'
+      });
+      await logActivity('unlink_tablet', 'session', stationId, `Unlinked tablet device for station '${stationId}'`);
+    } catch (err) {
+      console.error('Failed to unlink tablet:', err);
+    }
+  };
+
 
   const renderScreen = () => {
     switch (activeTab) {
@@ -190,21 +207,41 @@ export function ReceptionistShell() {
             {/* Tablet Sync Status */}
             {/* Tablet Sync Status */}
             {stationId ? (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 14px',
-                background: session?.tabletConnected ? 'rgba(76, 175, 80, 0.08)' : 'rgba(158, 158, 158, 0.08)',
-                borderRadius: 'var(--radius-pill)',
-                fontSize: '12px',
-                fontWeight: 700,
-                color: session?.tabletConnected ? '#4CAF50' : '#9E9E9E',
-                border: `1px solid ${session?.tabletConnected ? 'rgba(76, 175, 80, 0.2)' : 'rgba(158, 158, 158, 0.2)'}`,
-                transition: 'all 0.3s ease',
-              }}>
-                <TabletIcon color={session?.tabletConnected ? '#4CAF50' : '#9E9E9E'} />
-                <span>{session?.tabletConnected ? 'Tablet Synced' : 'Tablet Offline'}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '6px 14px',
+                  background: session?.tabletConnected ? 'rgba(76, 175, 80, 0.08)' : 'rgba(158, 158, 158, 0.08)',
+                  borderRadius: 'var(--radius-pill)',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: session?.tabletConnected ? '#4CAF50' : '#9E9E9E',
+                  border: `1px solid ${session?.tabletConnected ? 'rgba(76, 175, 80, 0.2)' : 'rgba(158, 158, 158, 0.2)'}`,
+                  transition: 'all 0.3s ease',
+                }}>
+                  <TabletIcon color={session?.tabletConnected ? '#4CAF50' : '#9E9E9E'} />
+                  <span>{session?.tabletConnected ? 'Tablet Synced' : 'Tablet Offline'}</span>
+                </div>
+                {session?.pairedTabletId && (
+                  <button
+                    className="btn-soft"
+                    onClick={handleUnlinkTablet}
+                    style={{
+                      padding: '5px 12px',
+                      fontSize: '11px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      fontWeight: 700,
+                      gap: '4px',
+                    }}
+                    title="Unlink current tablet connection pairing"
+                  >
+                    🔗 Unlink
+                  </button>
+                )}
               </div>
             ) : (
               <div style={{

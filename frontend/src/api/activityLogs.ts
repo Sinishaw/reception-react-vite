@@ -7,7 +7,7 @@ export interface ActivityLog {
   userId: string | null;
   userName: string | null;
   userEmail: string | null;
-  action: 'create' | 'update' | 'delete' | 'checkout' | 'create_session' | 'terminate_session' | 'login' | 'logout' | 'session_expiry';
+  action: 'create' | 'update' | 'delete' | 'checkout' | 'create_session' | 'terminate_session' | 'login' | 'logout' | 'session_expiry' | 'link_tablet' | 'unlink_tablet';
   entityType: 'visit' | 'appointment' | 'session' | 'auth';
   entityId: string;
   details: string;

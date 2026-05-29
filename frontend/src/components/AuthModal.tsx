@@ -1,0 +1,332 @@
+import React, { useState } from 'react';
+import { auth } from '../lib/firebase';
+import { 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  updateProfile
+} from 'firebase/auth';
+
+interface AuthModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function AuthModal({ isOpen, onClose }: AuthModalProps) {
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    setLoading(true);
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      onClose();
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Google Sign-In failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      if (isSignUp) {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        if (displayName) {
+          await updateProfile(userCredential.user, { displayName });
+        }
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
+      onClose();
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Authentication failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemoSignIn = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      // Sign in with a demo account. If it doesn't exist, create it.
+      const demoEmail = 'receptionist@mmcy.com';
+      const demoPassword = 'Password123!';
+      try {
+        await signInWithEmailAndPassword(auth, demoEmail, demoPassword);
+      } catch (err: any) {
+        if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+          // Attempt to register
+          const userCredential = await createUserWithEmailAndPassword(auth, demoEmail, demoPassword);
+          await updateProfile(userCredential.user, { 
+            displayName: 'MMCY Receptionist',
+            photoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=MMCY'
+          });
+        } else {
+          throw err;
+        }
+      }
+      onClose();
+    } catch (err: any) {
+      console.error(err);
+      setError('Demo Sign-In failed: ' + (err.message || 'unknown error'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.65)',
+      backdropFilter: 'blur(8px)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      animation: 'fadeIn 0.2s ease-out',
+    }}>
+      <div style={{
+        background: 'var(--surface-container-high, #211c19)',
+        border: '1px solid var(--outline-variant, #3a3430)',
+        borderRadius: 'var(--radius-lg, 16px)',
+        padding: '32px',
+        width: '100%',
+        maxWidth: '420px',
+        boxShadow: 'var(--shadow-lg), 0 0 40px rgba(244, 123, 32, 0.15)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        fontFamily: 'var(--font-family, system-ui)',
+        color: 'var(--on-surface, #f8ede8)',
+      }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--primary, #f47b20)' }}>
+            {isSignUp ? 'Create Account' : 'Sign In'}
+          </h2>
+          <button 
+            onClick={onClose} 
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--secondary-50, #b2a8a4)',
+              fontSize: '20px',
+              cursor: 'pointer',
+              padding: '4px',
+            }}
+          >
+            ×
+          </button>
+        </div>
+
+        {error && (
+          <div style={{
+            background: 'rgba(239, 83, 80, 0.1)',
+            border: '1px solid rgba(239, 83, 80, 0.3)',
+            borderRadius: 'var(--radius-sm, 6px)',
+            padding: '10px 14px',
+            color: '#ef5350',
+            fontSize: '13px',
+            lineHeight: 1.4,
+          }}>
+            ⚠️ {error}
+          </div>
+        )}
+
+        {/* Auth Form */}
+        <form onSubmit={handleEmailAuth} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {isSignUp && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--secondary-70, #c4b9b5)' }}>Full Name</label>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="John Doe"
+                required
+                style={{
+                  padding: '12px 14px',
+                  background: 'var(--surface-container-low, #1a1512)',
+                  border: '1px solid var(--outline, #85746b)',
+                  borderRadius: 'var(--radius-md, 8px)',
+                  color: 'white',
+                  fontSize: '14px',
+                  outline: 'none',
+                }}
+              />
+            </div>
+          )}
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--secondary-70, #c4b9b5)' }}>Email Address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="receptionist@mmcy.com"
+              required
+              style={{
+                padding: '12px 14px',
+                background: 'var(--surface-container-low, #1a1512)',
+                border: '1px solid var(--outline, #85746b)',
+                borderRadius: 'var(--radius-md, 8px)',
+                color: 'white',
+                fontSize: '14px',
+                outline: 'none',
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--secondary-70, #c4b9b5)' }}>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              minLength={6}
+              style={{
+                padding: '12px 14px',
+                background: 'var(--surface-container-low, #1a1512)',
+                border: '1px solid var(--outline, #85746b)',
+                borderRadius: 'var(--radius-md, 8px)',
+                color: 'white',
+                fontSize: '14px',
+                outline: 'none',
+              }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              padding: '14px',
+              background: 'var(--primary, #f47b20)',
+              color: 'var(--on-primary, #ffffff)',
+              border: 'none',
+              borderRadius: 'var(--radius-md, 8px)',
+              fontWeight: 700,
+              cursor: 'pointer',
+              marginTop: '8px',
+              fontSize: '14px',
+              boxShadow: 'var(--shadow-glow)',
+              transition: 'all 0.2s',
+            }}
+          >
+            {loading ? 'Processing...' : isSignUp ? 'Create Account' : 'Sign In'}
+          </button>
+        </form>
+
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          textAlign: 'center',
+          color: 'var(--secondary-50, #b2a8a4)',
+          fontSize: '12px',
+          margin: '8px 0',
+        }}>
+          <div style={{ flex: 1, height: '1px', background: 'var(--outline-variant, #3a3430)' }}></div>
+          <span style={{ padding: '0 10px' }}>OR</span>
+          <div style={{ flex: 1, height: '1px', background: 'var(--outline-variant, #3a3430)' }}></div>
+        </div>
+
+        {/* Social / Demo buttons */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              padding: '12px',
+              background: 'white',
+              color: '#333333',
+              border: 'none',
+              borderRadius: 'var(--radius-md, 8px)',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontSize: '14px',
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69c-.29 1.5-.1.14-.14 3.01H12v3.92h6.69c-.29 1.5-.1.14-.14 3.01h6.69c-1.3-1.2-3.3-3.02-3.3-6.01 0-.7.06-1.4.19-2.07H12v3.92h6.69c-.29 1.5-1.14 2.77-2.4 3.6l3.75 2.9c2.2-2.02 3.7-5 3.7-8.56 0-.81-.07-1.6-.2-2.37z" style={{ display: 'none' }} />
+              <path fill="#EA4335" d="M12 24c3.24 0 5.97-1.08 7.96-2.91l-3.75-2.9c-1.04.7-2.38 1.11-4.21 1.11-3.24 0-5.97-2.19-6.95-5.15H1.18v3.01C3.17 21.81 7.27 24 12 24z" />
+              <path fill="#4285F4" d="M12 24c3.24 0 5.97-1.08 7.96-2.91l-3.75-2.9c-1.04.7-2.38 1.11-4.21 1.11-3.24 0-5.97-2.19-6.95-5.15H1.18v3.01C3.17 21.81 7.27 24 12 24z" style={{ display: 'none' }} />
+              <path fill="#FBBC05" d="M5.05 14.15a7.12 7.12 0 0 1 0-4.3v-3L1.18 3.84a11.96 11.96 0 0 0 0 16.32l3.87-3.01z" />
+              <path fill="#4285F4" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.43-3.43C17.96 1.19 15.24 0 12 0 7.27 0 3.17 2.19 1.18 5.84l3.87 3.01c.98-2.96 3.71-5.1 6.95-5.1z" />
+              <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.6-.2-2.37H12v4.51h6.45c-.28 1.49-1.12 2.76-2.38 3.6l3.7 2.87c2.16-1.99 3.42-4.91 3.42-8.61z" />
+            </svg>
+            Google Sign-In
+          </button>
+          
+          <button
+            type="button"
+            onClick={handleDemoSignIn}
+            disabled={loading}
+            style={{
+              padding: '12px',
+              background: 'rgba(244, 123, 32, 0.1)',
+              color: 'var(--primary, #f47b20)',
+              border: '1px dashed var(--primary, #f47b20)',
+              borderRadius: 'var(--radius-md, 8px)',
+              fontWeight: 700,
+              cursor: 'pointer',
+              fontSize: '14px',
+              transition: 'all 0.2s',
+            }}
+          >
+            🔑 Demo Quick Sign-In
+          </button>
+        </div>
+
+        {/* Toggle Mode */}
+        <div style={{ textAlign: 'center', fontSize: '13px', marginTop: '10px' }}>
+          <span style={{ color: 'var(--secondary-50, #b2a8a4)' }}>
+            {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsSignUp(!isSignUp)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--primary, #f47b20)',
+              fontWeight: 700,
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              padding: 0,
+            }}
+          >
+            {isSignUp ? 'Sign In' : 'Sign Up'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -91,11 +91,11 @@ export function DashboardScreen() {
   }
 
   return (
-    <div style={{ padding: '32px', height: '100%', overflowY: 'auto', boxSizing: 'border-box' }}>
-      <h2 style={{ fontSize: '28px', fontWeight: 700, letterSpacing: '-0.5px', marginBottom: '32px' }}>Dashboard</h2>
+    <div style={{ padding: '16px 24px', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflow: 'hidden' }}>
+      <h2 style={{ fontSize: '22px', fontWeight: 700, letterSpacing: '-0.5px', marginBottom: '16px', flexShrink: 0 }}>Dashboard</h2>
 
       {/* Metric Cards */}
-      <div style={{ display: 'flex', gap: '20px', marginBottom: '32px' }}>
+      <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', flexShrink: 0 }}>
         <MetricCard title="Today's Visits" value={metrics.todayVisits} color="#005AB4" icon="📊" />
         <MetricCard title="Active Now" value={metrics.activeNow} color="#4CAF50" icon="🟢" />
         <MetricCard title="Upcoming" value={metrics.upcoming} color="#F47B20" icon="📅" />
@@ -103,43 +103,47 @@ export function DashboardScreen() {
       </div>
 
       {/* Charts */}
-      <div style={{ display: 'flex', gap: '24px' }}>
+      <div style={{ display: 'flex', gap: '20px', flex: 1, minHeight: 0 }}>
         {/* Visits per Day */}
-        <div className="card-elevated" style={{ flex: 2, padding: '24px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '20px' }}>Visits per Day</h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={barData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-              <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#666' }} />
-              <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: '#666' }} />
-              <Tooltip contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-              <Bar dataKey="visits" fill="var(--primary)" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="card-elevated" style={{ flex: 2, padding: '20px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <h3 style={{ fontSize: '15px', fontWeight: 700, marginBottom: '12px', flexShrink: 0 }}>Visits per Day</h3>
+          <div style={{ flex: 1, minHeight: 0 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={barData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#666' }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: '#666' }} />
+                <Tooltip contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                <Bar dataKey="visits" fill="var(--primary)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         {/* Purpose Breakdown */}
-        <div className="card-elevated" style={{ flex: 1, padding: '24px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '20px' }}>Purpose Breakdown</h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={100}
-                paddingAngle={2}
-                dataKey="value"
-              >
-                {pieData.map((_, index) => (
-                  <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
-            </PieChart>
-          </ResponsiveContainer>
+        <div className="card-elevated" style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <h3 style={{ fontSize: '15px', fontWeight: 700, marginBottom: '12px', flexShrink: 0 }}>Purpose Breakdown</h3>
+          <div style={{ flex: 1, minHeight: 0 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="45%"
+                  innerRadius={50}
+                  outerRadius={80}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  {pieData.map((_, index) => (
+                    <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
     </div>

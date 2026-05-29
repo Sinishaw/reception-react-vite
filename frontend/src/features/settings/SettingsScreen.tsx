@@ -4,6 +4,8 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { updateSession, clearSession } from '../../api/sessions';
 import { searchFloors, searchStations } from '../../api/lookups';
 import type { ActiveSession } from '../../types/models';
+import { logActivity } from '../../api/activityLogs';
+
 
 export function SettingsScreen() {
   const [stationId, setStationId, removeStationId] = useLocalStorage<string | null>('stationId', null);
@@ -61,6 +63,7 @@ export function SettingsScreen() {
         assignedFloor: selectedFloor,
       };
       await updateSession(selectedStation, session);
+      await logActivity('create_session', 'session', sid, `Created session for station '${selectedStation}' on floor '${selectedFloor}'`);
       showFeedback('success', `Session created for ${selectedStation} on ${selectedFloor}`);
     } catch (e) {
       console.error('Failed to create session:', e);
@@ -71,6 +74,7 @@ export function SettingsScreen() {
     if (!stationId) return;
     try {
       await updateSession(stationId, { screen: 'terminated' });
+      await logActivity('terminate_session', 'session', sessionId || 'unknown', `Terminated session for station '${stationId}'`);
       removeStationId();
       removeFloor();
       removeSessionId();

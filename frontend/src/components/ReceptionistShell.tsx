@@ -4,6 +4,7 @@ import { VisitLogScreen } from '../features/visitors/VisitLogScreen';
 import { AppointmentsScreen } from '../features/appointments/AppointmentsScreen';
 import { DashboardScreen } from '../features/dashboard/DashboardScreen';
 import { SettingsScreen } from '../features/settings/SettingsScreen';
+import { ActivitiesScreen } from '../features/activities/ActivitiesScreen';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useSSE } from '../hooks/useSSE';
 import { auth } from '../lib/firebase';
@@ -19,7 +20,7 @@ const TabletIcon = ({ color }: { color: string }) => (
   </svg>
 );
 
-const PAGE_TITLES = ['Dashboard', 'Visitors', 'Appointments', 'Settings'];
+const PAGE_TITLES = ['Dashboard', 'Visitors', 'Appointments', 'Settings', 'Activities'];
 
 export function ReceptionistShell() {
   const [activeTab, setActiveTab] = useState(0);
@@ -54,6 +55,7 @@ export function ReceptionistShell() {
       case 1: return <VisitLogScreen />;
       case 2: return <AppointmentsScreen />;
       case 3: return <SettingsScreen />;
+      case 4: return <ActivitiesScreen />;
       default: return <DashboardScreen />;
     }
   };

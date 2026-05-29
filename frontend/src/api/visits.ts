@@ -4,6 +4,7 @@ import {
   updateDoc, deleteDoc, query, orderBy 
 } from 'firebase/firestore';
 import type { Visit } from '../types/models';
+import { logActivity, getRecordDiff } from './activityLogs';
 
 export async function getVisits(params?: { status?: string; search?: string }): Promise<Visit[]> {
   const colRef = collection(db, 'visits');
@@ -48,15 +49,27 @@ export async function createVisit(data: Partial<Visit>): Promise<Visit> {
   const visitData = cleanData({ ...data, id });
   const docRef = doc(db, 'visits', id);
   await setDoc(docRef, visitData);
+  await logActivity(
+    'create', 
+    'visit', 
+    id, 
+    `Created visit record for ${visitData.visitorName} (Company: ${visitData.visitorCompany || 'None'}, Host: ${visitData.hostName}, Purpose: ${visitData.purpose || 'None'})`
+  );
   return visitData as Visit;
 }
 
 export async function updateVisit(id: string, data: Partial<Visit>): Promise<Visit> {
+  const oldVisit = await getVisitById(id);
   const docRef = doc(db, 'visits', id);
   const cleanedData = cleanData(data);
   await updateDoc(docRef, cleanedData as any);
   const snap = await getDoc(docRef);
-  return snap.data() as Visit;
+  const updatedVisit = snap.data() as Visit;
+  
+  const diff = getRecordDiff(oldVisit, updatedVisit);
+  await logActivity('update', 'visit', id, `Updated visit for ${updatedVisit.visitorName}: ${diff}`);
+  
+  return updatedVisit;
 }
 
 export async function checkOutVisit(id: string): Promise<Visit> {
@@ -66,7 +79,9 @@ export async function checkOutVisit(id: string): Promise<Visit> {
     checkOutTime: new Date().toISOString(),
   });
   const snap = await getDoc(docRef);
-  return snap.data() as Visit;
+  const visit = snap.data() as Visit;
+  await logActivity('checkout', 'visit', id, `Checked out visitor ${visit.visitorName}`);
+  return visit;
 }
 
 export async function deleteVisit(id: string): Promise<{ success: boolean }> {
@@ -82,5 +97,11 @@ export async function deleteVisit(id: string): Promise<{ success: boolean }> {
 
   const docRef = doc(db, 'visits', id);
   await deleteDoc(docRef);
+  await logActivity(
+    'delete', 
+    'visit', 
+    id, 
+    `Deleted visit record for ${visit.visitorName} (Phone: ${visit.visitorPhone}, Company: ${visit.visitorCompany || 'None'}, Host: ${visit.hostName})`
+  );
   return { success: true };
 }

@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { icon: '👥', label: 'Visitors' },
   { icon: '📅', label: 'Appointments' },
   { icon: '⚙️', label: 'Settings' },
+  { icon: '📋', label: 'Activities' },
 ];
 
 export function Sidebar({ activeTab, onTabChange, stationId, floor }: SidebarProps) {

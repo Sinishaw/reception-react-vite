@@ -4,6 +4,7 @@ import {
   updateDoc, deleteDoc, query, orderBy 
 } from 'firebase/firestore';
 import type { Appointment } from '../types/models';
+import { logActivity, getRecordDiff } from './activityLogs';
 
 export async function getAppointments(params?: { status?: string; search?: string }): Promise<Appointment[]> {
   const colRef = collection(db, 'appointments');
@@ -45,19 +46,38 @@ export async function createAppointment(data: Partial<Appointment>): Promise<App
   const aptData = cleanData({ ...data, id });
   const docRef = doc(db, 'appointments', id);
   await setDoc(docRef, aptData);
+  await logActivity(
+    'create', 
+    'appointment', 
+    id, 
+    `Created appointment for ${aptData.visitorName} (Company: ${aptData.visitorCompany || 'None'}, Host: ${aptData.hostName}, Scheduled: ${aptData.scheduledAt})`
+  );
   return aptData as Appointment;
 }
 
 export async function updateAppointment(id: string, data: Partial<Appointment>): Promise<Appointment> {
+  const oldApt = await getAppointmentById(id);
   const docRef = doc(db, 'appointments', id);
   const cleanedData = cleanData(data);
   await updateDoc(docRef, cleanedData as any);
   const snap = await getDoc(docRef);
-  return snap.data() as Appointment;
+  const updatedApt = snap.data() as Appointment;
+  
+  const diff = getRecordDiff(oldApt, updatedApt);
+  await logActivity('update', 'appointment', id, `Updated appointment for ${updatedApt.visitorName}: ${diff}`);
+  
+  return updatedApt;
 }
 
 export async function deleteAppointment(id: string): Promise<{ success: boolean }> {
+  const apt = await getAppointmentById(id);
   const docRef = doc(db, 'appointments', id);
   await deleteDoc(docRef);
+  await logActivity(
+    'delete', 
+    'appointment', 
+    id, 
+    `Deleted appointment for ${apt.visitorName} (Phone: ${apt.visitorPhone}, Company: ${apt.visitorCompany || 'None'}, Host: ${apt.hostName})`
+  );
   return { success: true };
 }

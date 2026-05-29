@@ -8,7 +8,7 @@ import { ActivitiesScreen } from '../features/activities/ActivitiesScreen';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useSSE } from '../hooks/useSSE';
 import { auth, db } from '../lib/firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut, getRedirectResult } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { AuthModal } from './AuthModal';
 import { logActivity } from '../api/activityLogs';
@@ -37,27 +37,44 @@ export function ReceptionistShell() {
   const { session } = useSSE(stationId);
  
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    // Process redirect result first to ensure standard Google sign-in redirect sessions complete successfully
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          console.log('[Auth] Google redirect sign-in resolved successfully:', result.user);
+        }
+      })
+      .catch((error) => {
+        console.error('[Auth] Google redirect sign-in error:', error);
+      });
+
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       try {
         if (currentUser) {
+          setUser(currentUser);
+          
           const isLogged = sessionStorage.getItem('auth_logged_in');
           if (!isLogged) {
             sessionStorage.setItem('auth_logged_in', 'true');
-            await logActivity(
+            logActivity(
               'login',
               'auth',
               currentUser.uid,
               `User ${currentUser.displayName || currentUser.email || 'unknown'} logged in`
-            );
+            ).catch((err) => {
+              console.error('[Auth] Failed to write login activity log:', err);
+            });
           }
-          setUser(currentUser);
         } else {
+          setUser(null);
+          
           const wasLogged = sessionStorage.getItem('auth_logged_in');
           if (wasLogged) {
             sessionStorage.removeItem('auth_logged_in');
-            await logActivity('logout', 'auth', 'unknown', 'Session ended (logged out or token expired)');
+            logActivity('logout', 'auth', 'unknown', 'Session ended (logged out or token expired)').catch((err) => {
+              console.error('[Auth] Failed to write logout activity log:', err);
+            });
           }
-          setUser(null);
         }
       } catch (err) {
         console.error('Error in onAuthStateChanged:', err);

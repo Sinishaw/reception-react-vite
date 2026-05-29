@@ -71,14 +71,19 @@ export function DashboardScreen() {
       flex: 1,
       background: `${color}10`,
       borderRadius: 'var(--radius-lg)',
-      padding: '24px',
+      padding: 'clamp(18px, 2.5vh, 32px) 24px',
       border: `1px solid ${color}20`,
+      minHeight: 'clamp(90px, 12vh, 140px)',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      boxSizing: 'border-box',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexShrink: 0 }}>
         <span style={{ fontSize: '20px' }}>{icon}</span>
-        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--secondary-70)' }}>{title}</span>
+        <span style={{ fontSize: 'clamp(13px, 1.3vh, 15px)', fontWeight: 600, color: 'var(--secondary-70)' }}>{title}</span>
       </div>
-      <div style={{ fontSize: '36px', fontWeight: 800, color, letterSpacing: '-1px' }}>{value}</div>
+      <div style={{ fontSize: 'clamp(32px, 3.5vh, 44px)', fontWeight: 800, color, letterSpacing: '-1px', lineHeight: 1.1 }}>{value}</div>
     </div>
   );
 

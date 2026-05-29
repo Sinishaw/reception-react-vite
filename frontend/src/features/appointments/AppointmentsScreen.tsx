@@ -63,10 +63,10 @@ export function AppointmentsScreen() {
   };
 
   return (
-    <div style={{ padding: '32px', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflow: 'hidden' }}>
+    <div style={{ padding: '16px 24px', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflow: 'hidden' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: 700, letterSpacing: '-0.5px' }}>Appointments</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h2 style={{ fontSize: '22px', fontWeight: 700, letterSpacing: '-0.5px' }}>Appointments</h2>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button className="btn-gradient" onClick={() => setShowAdd(true)}>
             <span>+</span> Add Appointment
@@ -77,7 +77,7 @@ export function AppointmentsScreen() {
       </div>
 
       {/* Search & Filter */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
         <div style={{ flex: 3, position: 'relative' }}>
           <input
             className="input-soft"

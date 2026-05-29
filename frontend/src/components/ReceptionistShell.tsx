@@ -70,7 +70,7 @@ export function ReceptionistShell() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Floating Header */}
         <header style={{
-          height: 'var(--header-height)',
+          height: '64px',
           padding: '0 32px',
           display: 'flex',
           alignItems: 'center',
@@ -79,14 +79,7 @@ export function ReceptionistShell() {
           borderBottom: '1px solid var(--outline-variant)',
           flexShrink: 0,
         }}>
-          <div>
-            <h1 style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.5px' }}>
-              {PAGE_TITLES[activeTab]}
-            </h1>
-            <p style={{ fontSize: '13px', color: 'var(--secondary-50)', marginTop: '2px' }}>
-              Welcome back, administrator
-            </p>
-          </div>
+          <div />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             {/* Tablet Sync Status */}

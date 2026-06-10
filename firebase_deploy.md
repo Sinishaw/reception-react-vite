@@ -4,10 +4,10 @@ This file contains the step-by-step instructions to build and deploy the MMCY Re
 
 ## Steps
 
-All commands should be run directly in this frontend directory (`/Users/sinishaw/Documents/MMCY/reception-app-flutter/reception-app-web/frontend`).
+All commands should be run directly in the root directory (`/Users/sinishaw/Documents/MMCY/reception-app-flutter/reception-app-web`).
 
 ### 1. Build the Frontend App
-Go to the frontend directory and build the production bundle:
+Go to the root directory and build the production bundle:
 - **Command**: `npm run build`
 
 ### 2. Deploy to Firebase
